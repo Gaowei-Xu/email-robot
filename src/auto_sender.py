@@ -26,6 +26,7 @@
 class AutoSender(object):
     """
     auto email sender class
+    Reference: http://www.runoob.com/python/python-email.html
     """
     def __init__(self, source_addr_csv_file):
         """
