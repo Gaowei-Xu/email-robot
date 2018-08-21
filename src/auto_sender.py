@@ -22,6 +22,11 @@
 # @Email   : Gavin.Xu@bmw.com
 # @Department: EG-CN-72
 
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.utils import formataddr
+
 
 class AutoSender(object):
     """
@@ -56,14 +61,49 @@ class AutoSender(object):
         send emails
         :return:
         """
+        host = 'smtp.163.com'
+        port = 25
+        sender_email_addr = 'pumandaxia@163.com'
+        sender_email_pwd = 'y6u7i8o912123x'
+
+        # server configuration and login
+        server = smtplib.SMTP(host, port)
+        server.starttls()
+        server.login(sender_email_addr, sender_email_pwd)
+
+        # obtain receivers
+        receivers = self.get_all_email_addrs()
+        receivers_amount = len(receivers)
+
+        # send email
+        for i, receiver in enumerate(receivers):
+            try:
+                message = self.build_email_content(sender_email_addr, receiver)
+                server.sendmail(sender_email_addr, receiver, message.as_string())
+                print 'Sending email to customer {}, {}/{}...'.format(receiver, i + 1, receivers_amount)
+            except smtplib.SMTPException as e:
+                print 'Failed to send with exception: {}'.format(e)
         return
 
-    def build_email_content(self):
+    @staticmethod
+    def build_email_content(sender_email_addr, receiver_email_addr):
         """
         build email content
+
+        :param sender_email_addr:
+        :param receiver_email_addr:
         :return:
         """
-        return
+        html_content = """
+        <h2>CHINA</h2>
+        <p>I am Chinese</p>
+        """
+        message = MIMEText(html_content, 'html', 'utf-8')
+        message['From'] = formataddr(['不喂大侠', sender_email_addr])
+        message['To'] = formataddr([receiver_email_addr])
+        message['Subject'] = "邮件测试"
+
+        return message
 
 
 if __name__ == '__main__':
@@ -71,6 +111,6 @@ if __name__ == '__main__':
         source_addr_csv_file='../dataset/addrs.csv'
     )
 
-    print auto_sender.get_all_email_addrs()
+    auto_sender.send()
 
 
