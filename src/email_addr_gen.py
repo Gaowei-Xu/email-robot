@@ -21,4 +21,58 @@
 # @Author  : Gavin.Xu
 # @Email   : Gavin.Xu@bmw.com
 # @Department: EG-CN-72
+import re
 
+
+class EmailAddrGen(object):
+    """
+    A class for email address generator
+    """
+    def __init__(self, dataset_paths, output_csv_path):
+        self._dataset_paths = dataset_paths
+        self._output_csv_path = output_csv_path
+
+    def filter(self):
+        for dataset_path in self._dataset_paths:
+            fh = open(dataset_path, 'rb')
+            lines = fh.readlines()
+            qq_accounts = list()
+            for line in lines:
+                line = line.strip()
+                qq_account, exist = self.search_qq_num(line)
+                if exist:
+                    qq_accounts.append(qq_account)
+            print 'File {} has {} QQ accounts...'.format(dataset_path, len(qq_accounts))
+            self.dump_email_address(qq_accounts)
+
+    @staticmethod
+    def search_qq_num(string):
+        pattern = re.compile(r"\d{5,14}")
+        qq_account = pattern.findall(string)
+        if qq_account:
+            return qq_account, True
+        else:
+            return "NULL", False
+
+    def dump_email_address(self, qq_accounts):
+        wh = open(self._output_csv_path, 'a+')
+        for qq_account in qq_accounts:
+            email_addr = qq_account[0] + '@qq.com' + '\n'
+            wh.write(email_addr)
+        wh.close()
+
+
+if __name__ == '__main__':
+    generator = EmailAddrGen(
+        [
+            '../dataset/raw/qun_611489361.csv',
+            '../dataset/raw/seu_qq_emails.txt',
+            '../dataset/raw/433487256.txt',
+            '../dataset/raw/425272150.txt',
+
+        ],
+
+        '../dataset/addrs.csv'
+    )
+
+    generator.filter()

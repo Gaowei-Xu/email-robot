@@ -26,12 +26,14 @@ import random
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
+import string
 
 
 class AutoSender(object):
     """
     auto email sender class
     Reference: http://www.runoob.com/python/python-email.html
+    Tools reference: https://qun.qq.com/member.html#gid=220543148
     """
     def __init__(self, source_addr_csv_file):
         """
@@ -64,7 +66,7 @@ class AutoSender(object):
         host = 'smtp.163.com'
         port = 25
         sender_email_addr = 'pumandaxia@163.com'
-        sender_email_pwd = 'y6u7i8o912123x'
+        sender_email_pwd = 'y6u7i8o912wsa3red'
 
         # server configuration and login
         server = smtplib.SMTP(host, port)
@@ -82,7 +84,7 @@ class AutoSender(object):
                 server.sendmail(sender_email_addr, receiver, message.as_string())
                 print 'Sending email to customer {}, {}/{}...'.format(receiver, i + 1, receivers_amount)
             except smtplib.SMTPException as e:
-                print 'Failed to send with exception: {}'.format(e)
+                print 'Failed to send email to customer {} with exception: {}'.format(receiver, e)
         return
 
     @staticmethod
@@ -94,14 +96,53 @@ class AutoSender(object):
         :param receiver_email_addr:
         :return:
         """
+        random_string = ''
+        for i in range(4096):
+            random_string += ''.join(random.sample(string.ascii_letters + string.digits, 1))
+
         html_content = """
-        <h2>CHINA</h2>
-        <p>I am Chinese</p>
-        """
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Title</title>
+        </head>
+        <body>
+        <h2 style="color: midnightblue">工科论文代写</h2>
+        
+        <div>
+           <span>
+               <strong style="color: midnightblue">
+                    毕业论文，学术论文（本科，全日制硕士，在职硕士），
+                    专业为
+                   <b style="color: rebeccapurple">
+                       计算机／软件工程／电子科学／自动化／信息工程／大数据／仪器科学等专业
+                   </b>
+                   提供高质量论文代写服务！
+                </strong>
+           </span>
+        </div>
+        
+        <div>
+            <p style="color: darkslategrey; " >
+                我们是由复旦大学／上海交大／东南大学／中科院微电子所／浙江大学／港科大硕士，博士组成的团队，专业涵盖电子／计算机／软件工程／
+                自动化／信息工程等，专业提供高质量的工科论文代写服务！我们团队成员在攻读硕士博士期间曾发表过EI/SCI文章数量超30篇之多！
+                曾服务过四川大学，东南大学，北京大学，北京邮电大学，上海交通大学的同学们，均顺利毕业和在期刊发表文章！
+            </p>
+            <span>具体课题咨询与报价请联系微信"不喂大侠"，微信号为：my_wind33</span>
+        </div>
+        
+        <div>
+            <p style="display: none">
+                {}
+            </p>
+        </div>
+        </body>
+        </html>
+        """.format(random_string)
         message = MIMEText(html_content, 'html', 'utf-8')
         message['From'] = formataddr(['不喂大侠', sender_email_addr])
-        message['To'] = formataddr([receiver_email_addr])
-        message['Subject'] = "邮件测试"
+        message['To'] = formataddr(['test', receiver_email_addr])
+        message['Subject'] = "工科论文代写(本科，硕士，在职研毕业论文), 联系微信 my_wind33"
 
         return message
 
