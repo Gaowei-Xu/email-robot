@@ -66,12 +66,7 @@ class AutoSender(object):
         host = 'smtp.163.com'
         port = 25
         sender_email_addr = 'pumandaxia@163.com'
-        sender_email_pwd = 'y6u7i8o912wsa3red'
-
-        # server configuration and login
-        server = smtplib.SMTP(host, port)
-        server.starttls()
-        server.login(sender_email_addr, sender_email_pwd)
+        sender_email_pwd = 'r4t5y6u7_asdxz'
 
         # obtain receivers
         receivers = self.get_all_email_addrs()
@@ -79,12 +74,19 @@ class AutoSender(object):
 
         # send email
         for i, receiver in enumerate(receivers):
+            # server configuration and login
+            server = smtplib.SMTP(host, port)
+            server.starttls()
+            server.login(sender_email_addr, sender_email_pwd)
+
             try:
                 message = self.build_email_content(sender_email_addr, receiver)
                 server.sendmail(sender_email_addr, receiver, message.as_string())
                 print 'Sending email to customer {}, {}/{}...'.format(receiver, i + 1, receivers_amount)
             except smtplib.SMTPException as e:
                 print 'Failed to send email to customer {} with exception: {}'.format(receiver, e)
+            finally:
+                server.close()
         return
 
     @staticmethod
@@ -140,8 +142,8 @@ class AutoSender(object):
         </html>
         """.format(random_string)
         message = MIMEText(html_content, 'html', 'utf-8')
-        message['From'] = formataddr(['不喂大侠', sender_email_addr])
-        message['To'] = formataddr(['test', receiver_email_addr])
+        message['From'] = formataddr(['论文代写', sender_email_addr])
+        message['To'] = receiver_email_addr
         message['Subject'] = "工科论文代写(本科，硕士，在职研毕业论文), 联系微信 my_wind33"
 
         return message
